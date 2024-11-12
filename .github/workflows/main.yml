@@ -1,0 +1,37 @@
+name: Auto-Commit Forked File
+
+on:
+  schedule:
+    - cron: '*/30 * * * *' # Runs every 30 minutes
+
+jobs:
+  update-file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Repository
+        uses: actions/checkout@v2
+        with:
+          repository: proxifly/free-proxy-list  # Source forked repository
+          path: source_repo
+
+      - name: Checkout Your Repository
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ryasrk/MyGPX  # Your repository
+          path: your_repo
+
+      - name: Copy File from Fork
+        run: |
+          cp source_repo/proxies/protocols/socks5/data.txt your_repo/socks5.txt
+
+      - name: Commit and Push Changes
+        run: |
+          cd your_repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add socks5.txt
+          git commit -m "Auto-update from forked file"
+          git push
+        env:
+          PAT: ${{ secrets.PAT }}
