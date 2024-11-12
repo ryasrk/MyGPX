@@ -1,0 +1,2 @@
+if not socks5_proxy.startswith('socks5://'):
+        socks5_proxy = f'socks5://{socks5_proxy}'
